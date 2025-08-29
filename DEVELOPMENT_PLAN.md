@@ -1,29 +1,61 @@
-This document tracks the development of the Hue-Expansion Tool. As the coding agent completes each task, the corresponding item will be moved from 'To-Do' to 'Completed' and its checkbox will be marked as done.
+# Development Plan: Programmatic GUI
 
-## To-Do
+This document outlines the development tasks for creating the Hue-Expansion Tool with a programmatic MATLAB GUI.
 
-### Phase 1: Application Scaffolding and UI Layout
-- [ ] Task 1.1: Initialize App Designer Project as HueExpansionApp.mlapp.
-- [ ] Task 1.2: Create the main 2-column layout grid (250px fixed left, weighted right).
-- [ ] Task 1.3: Add UIAxes for 'OriginalAxes' and 'ProcessedAxes' in the right column.
-- [ ] Task 1.4: Add a UIPanel ('Controls') and a UIButton ('Load Image') in the left column.
-- [ ] Task 1.5: Add parameter control components to the 'Controls' panel:
-    - [ ] UISlider for Hue Center (HueCenterSlider).
-    - [ ] UISlider for Hue Width (HueWidthSlider).
-    - [ ] UISlider for Saturation Threshold (SaturationSlider).
-    - [ ] UISlider for Value Threshold (ValueSlider).
-    - [ ] UICheckBox for 'Shift Output Spectrum' (ShiftSpectrumCheckBox).
+## Phase 1: Programmatic UI Generation
 
-### Phase 2: Implementing Core Functionality
-- [ ] Task 2.1: Implement the LoadImageButton callback to load an image into a private property (OriginalRGB) and display it.
-- [ ] Task 2.2: Convert the starter_script.m logic into a private helper method named processImage.
-- [ ] Task 2.3: Create a central private method named updateProcessedImage that calls processImage and displays the result.
-- [ ] Task 2.4: Create and assign a shared callback to all sliders and the checkbox that triggers updateProcessedImage.
+- [ ] **Task 1.1: Create Main App File and Figure**
+  - Create a new MATLAB script named `runHueExpansionApp.m`.
+  - The main function will create the UI.
+  - Create the main figure window using `uifigure` with the title 'Hue Expansion Tool'.
 
-### Phase 3: Refinement and User Experience
-- [ ] Task 3.1: Add UINumericEditField components linked to each slider for precise value input.
-- [ ] Task 3.2: Implement a startupFcn to automatically load 'your_endoscopic_image.jpg' if it exists.
-- [ ] Task 3.3: Add a 'Save Processed Image' button and implement its callback function.
-- [ ] Task 3.4: Implement basic error handling for file I/O operations.
+- [ ] **Task 1.2: Set Up the Layout Manager**
+  - Create a `uigridlayout` in the main figure.
+  - Configure the grid to have 2 columns.
+  - Set `ColumnWidth` to `{250, '1x'}`.
 
-## Completed
+- [ ] **Task 1.3: Programmatically Create Image Axes**
+  - Create a nested `uigridlayout` in the right column of the main grid.
+  - The nested grid should have 2 rows.
+  - Add a `uiaxes` in the top row for the original image.
+  - Add a `uiaxes` in the bottom row for the processed image.
+  - Set titles and disable ticks for both axes.
+
+- [ ] **Task 1.4: Programmatically Create Control Panel and Components**
+  - Create a `uipanel` titled 'Controls' in the left column.
+  - Inside the panel, create all UI components (`uibutton`, `uislider`, `uicheckbox`, `uilabel`).
+  - Set their default properties (text, range, initial values).
+  - Store component handles in a structured variable.
+
+## Phase 2: Implementing Core Functionality
+
+- [ ] **Task 2.1: Implement Image Loading Callback**
+  - Write a local function `loadImageCallback`.
+  - The function will handle opening a file dialog and displaying the selected image.
+  - Assign its handle (`@loadImageCallback`) to the 'Load Image' button's `ButtonPushedFcn`.
+
+- [ ] **Task 2.2: Implement the Processing Logic**
+  - Write a local function `processImage`.
+  - This function will contain the core hue expansion logic.
+  - It should read current values from the UI components.
+
+- [ ] **Task 2.3 & 2.4: Create and Link the Main Update Callback**
+  - Write a central callback function `updateView`.
+  - This function will call `processImage` and update the processed image axes.
+  - Assign its handle (`@updateView`) to the `ValueChangedFcn` of all sliders and the checkbox.
+
+## Phase 3: Refinement and User Experience
+
+- [ ] **Task 3.1: Add Numeric Edit Fields**
+  - Add `uieditfield('numeric')` components for each slider.
+  - Link their callbacks to the sliders.
+
+- [ ] **Task 3.2: Default Image Loading**
+  - Add logic at the start of the script to check for and load a default endoscopic image.
+
+- [ ] **Task 3.3: Save Image Functionality**
+  - Add a 'Save Processed Image' `uibutton`.
+  - Write the associated callback function to save the processed image.
+
+- [ ] **Task 3.4: Error Handling**
+  - Implement `try/catch` blocks within callbacks for robust error handling.

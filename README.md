@@ -14,8 +14,12 @@ This tool is a MATLAB application for visualizing hue expansion transformations 
 
 ## Technology
 
-This application is built using MATLAB and App Designer.
+This application is built programmatically using MATLAB scripts and native UI components.
 
 ## How to Run
 
-To run the application, you need to open the `HueExpansionApp.mlapp` file in MATLAB and click 'Run'.
+To run the application, open MATLAB, navigate to the project directory, and run the following command:
+
+```matlab
+runHueExpansionApp
+```

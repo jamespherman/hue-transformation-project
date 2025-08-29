@@ -307,6 +307,9 @@ function runHueExpansionApp()
             cla(handles.inputHueHistogramAxes); % Clear axes if no image
             return;
         end
+        % Ensure new plots are added without clearing existing lines
+        set(handles.inputHueHistogramAxes, 'NextPlot', 'add');
+
         % Calculate and plot the input histogram
         [counts, edges] = calculateHueHistogram(originalImage);
         binCenters = edges(1:end-1) + 0.5;
@@ -330,6 +333,9 @@ function runHueExpansionApp()
         fcn_in = makeConstrainToRectFcn('imline', [0 360], newYLim);
         setPositionConstraintFcn(handles.inputMinLine, fcn_in);
         setPositionConstraintFcn(handles.inputMaxLine, fcn_in);
+
+        % Ensure the draggable lines are drawn on top of the histogram
+        uistack([handles.inputMinLine, handles.inputMaxLine], 'top');
     end
 
     function initializeHueControls()

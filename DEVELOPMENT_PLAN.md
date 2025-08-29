@@ -28,3 +28,12 @@ This document tracks the development of the Hue-Expansion Tool. The original pla
 - [x] Task 4.5: Connect marker callbacks to `updateView` for real-time updates.
 - [x] Task 4.6: Remove the "Shift Output Spectrum" checkbox and associated logic.
 - [x] Task 4.7: Update documentation (`README.md`, `DEVELOPMENT_PLAN.md`) to reflect the new feature.
+
+### Phase 5: Interactive Hue Histograms
+- [x] Task 5.1: Revise control panel layout to replace static spectra with three new axes for histograms and a reference spectrum.
+- [x] Task 5.2: Implement a helper function to calculate hue histograms from an RGB image.
+- [x] Task 5.3: Implement a static hue histogram for the original image, which updates when a new image is loaded.
+- [x] Task 5.4: Implement a dynamic hue histogram for the processed image, which updates in real-time.
+- [x] Task 5.5: Add a static reference hue spectrum for user orientation.
+- [x] Task 5.6: Ensure draggable range markers are correctly overlaid and functional on the new histogram axes.
+- [x] Task 5.7: Update project documentation to reflect the new histogram-based interface.

@@ -46,8 +46,8 @@ function runHueExpansionApp()
     controlPanel.Layout.Column = 1;
 
     % Create a grid layout for the controls
-    controlGrid = uigridlayout(controlPanel, [8, 3]);
-    controlGrid.RowHeight = [40, 40, 22, 60, 22, 60, 22, 22];
+    controlGrid = uigridlayout(controlPanel, [10, 3]);
+    controlGrid.RowHeight = [40, 40, 22, '1x', 22, '1x', 22, 40, 22, 22]; % Adjusted for 3 axes
     controlGrid.ColumnWidth = {'fit', '1x', 50};
 
     % Load Image Button
@@ -60,46 +60,55 @@ function runHueExpansionApp()
     handles.saveImageButton.Layout.Row = 2;
     handles.saveImageButton.Layout.Column = [1, 3];
 
-    % --- Input Hue Range ---
-    lbl1 = uilabel(controlGrid, 'Text', 'Input Hue Range');
-    lbl1.Layout.Row = 3;          % Set the row
-    lbl1.Layout.Column = [1, 3];  % Set the columns
-    handles.inputHueAxes = uiaxes(controlGrid);
-    handles.inputHueAxes.Layout.Row = 4;
-    handles.inputHueAxes.Layout.Column = [1, 3];
-    handles.inputHueAxes.XTick = [];
-    handles.inputHueAxes.YTick = [];
-    disableDefaultInteractivity(handles.inputHueAxes);
+    % --- Input Hue Histogram ---
+    lbl1 = uilabel(controlGrid, 'Text', 'Input Hue Histogram');
+    lbl1.Layout.Row = 3;
+    lbl1.Layout.Column = [1, 3];
+    handles.inputHueHistogramAxes = uiaxes(controlGrid);
+    handles.inputHueHistogramAxes.Layout.Row = 4;
+    handles.inputHueHistogramAxes.Layout.Column = [1, 3];
+    handles.inputHueHistogramAxes.YTick = [];
+    disableDefaultInteractivity(handles.inputHueHistogramAxes);
 
-    % --- Output Hue Range ---
-    lbl2 = uilabel(controlGrid, 'Text', 'Output Hue Range');
+    % --- Output Hue Histogram ---
+    lbl2 = uilabel(controlGrid, 'Text', 'Output Hue Histogram');
     lbl2.Layout.Row = 5;
     lbl2.Layout.Column = [1, 3];
-    handles.outputHueAxes = uiaxes(controlGrid);
-    handles.outputHueAxes.Layout.Row = 6;
-    handles.outputHueAxes.Layout.Column = [1, 3];
-    handles.outputHueAxes.XTick = [];
-    handles.outputHueAxes.YTick = [];
-    disableDefaultInteractivity(handles.outputHueAxes);
+    handles.outputHueHistogramAxes = uiaxes(controlGrid);
+    handles.outputHueHistogramAxes.Layout.Row = 6;
+    handles.outputHueHistogramAxes.Layout.Column = [1, 3];
+    handles.outputHueHistogramAxes.YTick = [];
+    disableDefaultInteractivity(handles.outputHueHistogramAxes);
+
+    % --- Reference Hue Spectrum ---
+    lbl3 = uilabel(controlGrid, 'Text', 'Reference Hue Spectrum');
+    lbl3.Layout.Row = 7;
+    lbl3.Layout.Column = [1, 3];
+    handles.referenceHueSpectrumAxes = uiaxes(controlGrid);
+    handles.referenceHueSpectrumAxes.Layout.Row = 8;
+    handles.referenceHueSpectrumAxes.Layout.Column = [1, 3];
+    handles.referenceHueSpectrumAxes.XTick = [];
+    handles.referenceHueSpectrumAxes.YTick = [];
+    disableDefaultInteractivity(handles.referenceHueSpectrumAxes);
 
     % --- Saturation Threshold ---
-    lbl3 = uilabel(controlGrid, 'Text', 'Sat Thresh');
-    lbl3.Layout.Row = 7;
+    lbl4 = uilabel(controlGrid, 'Text', 'Sat Thresh');
+    lbl4.Layout.Row = 9;
     handles.saturationSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
-    handles.saturationSlider.Layout.Row = 7;
+    handles.saturationSlider.Layout.Row = 9;
     handles.saturationSlider.Layout.Column = 2;
     handles.saturationEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'ValueDisplayFormat', '%.2f');
-    handles.saturationEdit.Layout.Row = 7;
+    handles.saturationEdit.Layout.Row = 9;
     handles.saturationEdit.Layout.Column = 3;
 
     % --- Value Threshold ---
-    lbl4 = uilabel(controlGrid, 'Text', 'Val Thresh');
-    lbl4.Layout.Row = 8;
+    lbl5 = uilabel(controlGrid, 'Text', 'Val Thresh');
+    lbl5.Layout.Row = 10;
     handles.valueSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
-    handles.valueSlider.Layout.Row = 8;
+    handles.valueSlider.Layout.Row = 10;
     handles.valueSlider.Layout.Column = 2;
     handles.valueEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'ValueDisplayFormat', '%.2f');
-    handles.valueEdit.Layout.Row = 8;
+    handles.valueEdit.Layout.Row = 10;
     handles.valueEdit.Layout.Column = 3;
 
     % --- Callbacks ---
@@ -114,7 +123,7 @@ function runHueExpansionApp()
     handles.valueEdit.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.valueSlider);
 
     % --- App Startup ---
-    initializeHueAxes();
+    initializeHueControls();
     loadDefaultImage();
 
     % --- Nested Callback Functions ---
@@ -168,6 +177,8 @@ function runHueExpansionApp()
             imshow(originalImage, 'Parent', handles.originalAxes);
             handles.originalAxes.Title.String = sprintf('Original Image: %s', file);
 
+            plotInputHistogram(); % Plot histogram for newly loaded image
+
             % Update view immediately after loading
             updateView();
         catch ME
@@ -188,10 +199,37 @@ function runHueExpansionApp()
             if ~isempty(processedImage)
                 imshow(processedImage, 'Parent', handles.processedAxes);
                 handles.processedAxes.Title.String = 'Processed Image';
+
+                % --- DYNAMICALLY UPDATE OUTPUT HISTOGRAM ---
+                [counts, edges] = calculateHueHistogram(processedImage);
+                binCenters = edges(1:end-1) + 0.5;
+                bar(handles.outputHueHistogramAxes, binCenters, counts, 'BarWidth', 1);
+
+                % Adjust axes and update line positions
+                set(handles.outputHueHistogramAxes, 'XLim', [0 360]);
+                newYLim = get(handles.outputHueHistogramAxes, 'YLim');
+                if newYLim(2) < 1
+                    newYLim(2) = 1; % Ensure YLim is not [0 0]
+                end
+                set(handles.outputHueHistogramAxes, 'YLim', newYLim);
+
+                % Update the Y-limits of the draggable lines
+                posMin = getPosition(handles.outputMinLine);
+                posMax = getPosition(handles.outputMaxLine);
+                setPosition(handles.outputMinLine, [posMin(1,1) newYLim(1); posMin(1,1) newYLim(2)]);
+                setPosition(handles.outputMaxLine, [posMax(1,1) newYLim(1); posMax(1,1) newYLim(2)]);
+
+                % Update constraints
+                fcn_out = makeConstrainToRectFcn('imline', [0 360], newYLim);
+                setPositionConstraintFcn(handles.outputMinLine, fcn_out);
+                setPositionConstraintFcn(handles.outputMaxLine, fcn_out);
+                % --- END OF DYNAMIC UPDATE ---
+
             else
                 % Clear axes if there's no image to process
                 imshow([], 'Parent', handles.processedAxes);
                 handles.processedAxes.Title.String = 'Processed Image';
+                cla(handles.outputHueHistogramAxes); % Also clear output histogram
             end
         catch ME
             uialert(fig, ['Error processing image: ' ME.message], 'Processing Error');
@@ -264,35 +302,66 @@ function runHueExpansionApp()
         outputImage = hsv2rgb(finalHsvImage);
     end
 
-    function initializeHueAxes()
-        % Create and display the hue spectrum image on both axes
+    function plotInputHistogram()
+        if isempty(originalImage)
+            cla(handles.inputHueHistogramAxes); % Clear axes if no image
+            return;
+        end
+        % Calculate and plot the input histogram
+        [counts, edges] = calculateHueHistogram(originalImage);
+        binCenters = edges(1:end-1) + 0.5;
+        bar(handles.inputHueHistogramAxes, binCenters, counts, 'BarWidth', 1);
+
+        % Adjust axes and update line positions
+        set(handles.inputHueHistogramAxes, 'XLim', [0 360]);
+        newYLim = get(handles.inputHueHistogramAxes, 'YLim');
+        if newYLim(2) < 1
+            newYLim(2) = 1; % Ensure YLim is not [0 0] to avoid errors
+        end
+        set(handles.inputHueHistogramAxes, 'YLim', newYLim);
+
+        % Update the Y-limits of the draggable lines to span the new histogram height
+        posMin = getPosition(handles.inputMinLine);
+        posMax = getPosition(handles.inputMaxLine);
+        setPosition(handles.inputMinLine, [posMin(1,1) newYLim(1); posMin(1,1) newYLim(2)]);
+        setPosition(handles.inputMaxLine, [posMax(1,1) newYLim(1); posMax(1,1) newYLim(2)]);
+
+        % Update constraints
+        fcn_in = makeConstrainToRectFcn('imline', [0 360], newYLim);
+        setPositionConstraintFcn(handles.inputMinLine, fcn_in);
+        setPositionConstraintFcn(handles.inputMaxLine, fcn_in);
+    end
+
+    function initializeHueControls()
+        % This function now initializes the three new hue-related axes and the draggable lines.
+
+        % 1. Display the static reference spectrum
         spectrumImage = createHueSpectrumImage();
-        imshow(spectrumImage, 'Parent', handles.inputHueAxes);
-        imshow(spectrumImage, 'Parent', handles.outputHueAxes);
+        imshow(spectrumImage, 'Parent', handles.referenceHueSpectrumAxes);
+        set(handles.referenceHueSpectrumAxes, 'XTick', [], 'YTick', [], 'Box', 'on', 'XLim', [0 360], 'YLim', [0 1]);
 
-        % Set axis properties
-        set([handles.inputHueAxes, handles.outputHueAxes], ...
-            'XTick', [], 'YTick', [], 'Box', 'on', 'XLim', [0 360], 'YLim', [0 1]);
+        % 2. Set up histogram axes properties
+        allHistAxes = [handles.inputHueHistogramAxes, handles.outputHueHistogramAxes];
+        set(allHistAxes, 'Box', 'on', 'XLim', [0 360], 'YLim', [0 1]); % Set initial YLim
+        xlabel(handles.inputHueHistogramAxes, 'Hue Angle (0-360)');
+        xlabel(handles.outputHueHistogramAxes, 'Hue Angle (0-360)');
 
-        % Create draggable lines (imline) for input and output ranges
-        % Input range defaults to a narrow red band (e.g., 350 to 10 degrees)
-        handles.inputMinLine = imline(handles.inputHueAxes, [350 350], [0 1]);
-        handles.inputMaxLine = imline(handles.inputHueAxes, [10 10], [0 1]);
-
-        % Output range defaults to the full spectrum
-        handles.outputMinLine = imline(handles.outputHueAxes, [0 0], [0 1]);
-        handles.outputMaxLine = imline(handles.outputHueAxes, [360 360], [0 1]);
+        % 3. Create draggable lines for input and output ranges on their respective new axes
+        handles.inputMinLine = imline(handles.inputHueHistogramAxes, [350 350], [0 1]);
+        handles.inputMaxLine = imline(handles.inputHueHistogramAxes, [10 10], [0 1]);
+        handles.outputMinLine = imline(handles.outputHueHistogramAxes, [0 0], [0 1]);
+        handles.outputMaxLine = imline(handles.outputHueHistogramAxes, [360 360], [0 1]);
 
         % Customize line appearance
         allLines = [handles.inputMinLine, handles.inputMaxLine, handles.outputMinLine, handles.outputMaxLine];
-        setColor(allLines, [0.9 0.9 0.9]); % Light gray for better visibility
+        setColor(allLines, [0.1 0.1 0.1]);
 
         % Set constraints for dragging
-        fcn = makeConstrainToRectFcn('imline', get(handles.inputHueAxes,'XLim'), [0 1]);
-        setPositionConstraintFcn(handles.inputMinLine, fcn);
-        setPositionConstraintFcn(handles.inputMaxLine, fcn);
+        fcn_in = makeConstrainToRectFcn('imline', get(handles.inputHueHistogramAxes,'XLim'), [0 1]);
+        setPositionConstraintFcn(handles.inputMinLine, fcn_in);
+        setPositionConstraintFcn(handles.inputMaxLine, fcn_in);
 
-        fcn_out = makeConstrainToRectFcn('imline', get(handles.outputHueAxes,'XLim'), [0 1]);
+        fcn_out = makeConstrainToRectFcn('imline', get(handles.outputHueHistogramAxes,'XLim'), [0 1]);
         setPositionConstraintFcn(handles.outputMinLine, fcn_out);
         setPositionConstraintFcn(handles.outputMaxLine, fcn_out);
 
@@ -315,5 +384,19 @@ function runHueExpansionApp()
                           reshape(value, [1, 360, 1]));
 
         spectrumImg = hsv2rgb(hsvImage);
+    end
+
+    function [counts, edges] = calculateHueHistogram(rgbImage)
+        if isempty(rgbImage)
+            counts = zeros(1, 360);
+            edges = 0:1:360;
+            return;
+        end
+        % Convert RGB to HSV
+        hsvImage = rgb2hsv(rgbImage);
+        % Extract Hue channel and scale to 0-360
+        hueChannel = hsvImage(:,:,1) * 360;
+        % Calculate histogram
+        [counts, edges] = histcounts(hueChannel(:), 0:1:360);
     end
 end

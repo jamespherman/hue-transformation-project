@@ -61,7 +61,8 @@ function runHueExpansionApp()
     handles.saveImageButton.Layout.Column = [1, 3];
 
     % --- Hue Center ---
-    uilabel(controlGrid, 'Text', 'Hue Center').Layout.Row = 3;
+    lbl1 = uilabel(controlGrid, 'Text', 'Hue Center');
+    lbl1.Layout.Row = 3;
     handles.hueCenterSlider = uislider(controlGrid, 'Limits', [0, 360], 'Value', 180);
     handles.hueCenterSlider.Layout.Row = 3;
     handles.hueCenterSlider.Layout.Column = 2;
@@ -70,7 +71,8 @@ function runHueExpansionApp()
     handles.hueCenterEdit.Layout.Column = 3;
 
     % --- Hue Width ---
-    uilabel(controlGrid, 'Text', 'Hue Width').Layout.Row = 4;
+    lbl2 = uilabel(controlGrid, 'Text', 'Hue Width');
+    lbl2.Layout.Row = 4;
     handles.hueWidthSlider = uislider(controlGrid, 'Limits', [0, 360], 'Value', 90);
     handles.hueWidthSlider.Layout.Row = 4;
     handles.hueWidthSlider.Layout.Column = 2;
@@ -79,7 +81,8 @@ function runHueExpansionApp()
     handles.hueWidthEdit.Layout.Column = 3;
 
     % --- Saturation Threshold ---
-    uilabel(controlGrid, 'Text', 'Sat Thresh').Layout.Row = 5;
+    lbl3 = uilabel(controlGrid, 'Text', 'Sat Thresh');
+    lbl3.Layout.Row = 5;
     handles.saturationSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
     handles.saturationSlider.Layout.Row = 5;
     handles.saturationSlider.Layout.Column = 2;
@@ -88,7 +91,8 @@ function runHueExpansionApp()
     handles.saturationEdit.Layout.Column = 3;
 
     % --- Value Threshold ---
-    uilabel(controlGrid, 'Text', 'Val Thresh').Layout.Row = 6;
+    lbl4 = uilabel(controlGrid, 'Text', 'Val Thresh');
+    lbl4.Layout.Row = 6;
     handles.valueSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
     handles.valueSlider.Layout.Row = 6;
     handles.valueSlider.Layout.Column = 2;

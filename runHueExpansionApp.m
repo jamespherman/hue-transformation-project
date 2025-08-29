@@ -46,11 +46,12 @@ function runHueExpansionApp()
     controlPanel.Layout.Column = 1;
 
     % Create a grid layout for the controls
-    controlGrid = uigridlayout(controlPanel, [14, 4]); % More rows and a new column
+    controlGrid = uigridlayout(controlPanel, [16, 4]); % More rows and a new column
     controlGrid.RowHeight = {40, 40, ... % Buttons
+                             22, 40, ...    % Input Ref Spectrum
                              22, '1x', 30, ... % Input Hist + Controls
+                             22, 40, ...    % Output Ref Spectrum
                              22, '1x', 30, ... % Output Hist + Controls
-                             22, 40, ...    % Ref Spectrum
                              22, 22, 22, 22}; % Sliders
     controlGrid.ColumnWidth = {'fit', '1x', 'fit', '1x'};
 
@@ -64,90 +65,101 @@ function runHueExpansionApp()
     handles.saveImageButton.Layout.Row = 2;
     handles.saveImageButton.Layout.Column = [1, 4];
 
+    % --- Input Reference Hue Spectrum ---
+    lbl3 = uilabel(controlGrid, 'Text', 'Input Reference Hue Spectrum');
+    lbl3.Layout.Row = 3;
+    lbl3.Layout.Column = [1, 4];
+    handles.inputReferenceHueSpectrumAxes = uiaxes(controlGrid);
+    handles.inputReferenceHueSpectrumAxes.Layout.Row = 4;
+    handles.inputReferenceHueSpectrumAxes.Layout.Column = [1, 4];
+    handles.inputReferenceHueSpectrumAxes.XTick = [];
+    handles.inputReferenceHueSpectrumAxes.YTick = [];
+    disableDefaultInteractivity(handles.inputReferenceHueSpectrumAxes);
+
     % --- Input Hue Histogram ---
     lbl1 = uilabel(controlGrid, 'Text', 'Input Hue Histogram');
-    lbl1.Layout.Row = 3;
+    lbl1.Layout.Row = 5;
     lbl1.Layout.Column = [1, 4];
     handles.inputHueHistogramAxes = uiaxes(controlGrid);
-    handles.inputHueHistogramAxes.Layout.Row = 4;
+    handles.inputHueHistogramAxes.Layout.Row = 6;
     handles.inputHueHistogramAxes.Layout.Column = [1, 4];
     handles.inputHueHistogramAxes.YTick = [];
     disableDefaultInteractivity(handles.inputHueHistogramAxes);
 
     lbl11 = uilabel(controlGrid, 'Text', 'Min:');
+    lbl11.Layout.Row = 7;
     lbl11.Layout.Column = 1;
     lbl12 = uilabel(controlGrid, 'Text', 'Max:');
+    lbl12.Layout.Row = 7;
     lbl12.Layout.Column = 3;
     handles.inputMinEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 350, 'Limits', [0, 360]);
     handles.inputMaxEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 10, 'Limits', [0, 360]);
-    handles.inputMinEdit.Layout.Row = 5;
+    handles.inputMinEdit.Layout.Row = 7;
     handles.inputMinEdit.Layout.Column = 2;
-    handles.inputMaxEdit.Layout.Row = 5;
+    handles.inputMaxEdit.Layout.Row = 7;
     handles.inputMaxEdit.Layout.Column = 4;
+
+    % --- Output Reference Hue Spectrum ---
+    lbl_output_ref = uilabel(controlGrid, 'Text', 'Output Reference Hue Spectrum');
+    lbl_output_ref.Layout.Row = 8;
+    lbl_output_ref.Layout.Column = [1, 4];
+    handles.outputReferenceHueSpectrumAxes = uiaxes(controlGrid);
+    handles.outputReferenceHueSpectrumAxes.Layout.Row = 9;
+    handles.outputReferenceHueSpectrumAxes.Layout.Column = [1, 4];
+    handles.outputReferenceHueSpectrumAxes.XTick = [];
+    handles.outputReferenceHueSpectrumAxes.YTick = [];
+    disableDefaultInteractivity(handles.outputReferenceHueSpectrumAxes);
 
     % --- Output Hue Histogram ---
     lbl2 = uilabel(controlGrid, 'Text', 'Output Hue Histogram');
-    lbl2.Layout.Row = 6;
+    lbl2.Layout.Row = 10;
     lbl2.Layout.Column = [1, 4];
     handles.outputHueHistogramAxes = uiaxes(controlGrid);
-    handles.outputHueHistogramAxes.Layout.Row = 7;
+    handles.outputHueHistogramAxes.Layout.Row = 11;
     handles.outputHueHistogramAxes.Layout.Column = [1, 4];
     handles.outputHueHistogramAxes.YTick = [];
     disableDefaultInteractivity(handles.outputHueHistogramAxes);
 
     lbl21 = uilabel(controlGrid, 'Text', 'Min:');
-    lbl21.Layout.Row = 8;
+    lbl21.Layout.Row = 12;
+    lbl21.Layout.Column = 1;
     lbl22 = uilabel(controlGrid, 'Text', 'Max:');
-    lbl22.Layout.Row = 8;
-    lbl23 = uilabel(controlGrid, 'Text', 'Min:');
-    lbl23.Layout.Column = 1;
-    lbl24 = uilabel(controlGrid, 'Text', 'Max:');
-    lbl24.Layout.Column = 3;
+    lbl22.Layout.Row = 12;
+    lbl22.Layout.Column = 3;
     handles.outputMinEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 0, 'Limits', [0, 360]);
     handles.outputMaxEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 360, 'Limits', [0, 360]);
-    handles.outputMinEdit.Layout.Row = 8;
+    handles.outputMinEdit.Layout.Row = 12;
     handles.outputMinEdit.Layout.Column = 2;
-    handles.outputMaxEdit.Layout.Row = 8;
+    handles.outputMaxEdit.Layout.Row = 12;
     handles.outputMaxEdit.Layout.Column = 4;
-
-    % --- Reference Hue Spectrum ---
-    lbl3 = uilabel(controlGrid, 'Text', 'Reference Hue Spectrum');
-    lbl3.Layout.Row = 9;
-    lbl3.Layout.Column = [1, 4];
-    handles.referenceHueSpectrumAxes = uiaxes(controlGrid);
-    handles.referenceHueSpectrumAxes.Layout.Row = 10;
-    handles.referenceHueSpectrumAxes.Layout.Column = [1, 4];
-    handles.referenceHueSpectrumAxes.XTick = [];
-    handles.referenceHueSpectrumAxes.YTick = [];
-    disableDefaultInteractivity(handles.referenceHueSpectrumAxes);
 
     % --- Saturation Threshold ---
     lbl4 = uilabel(controlGrid, 'Text', 'Sat Thresh');
-    lbl4.Layout.Row = 11;
+    lbl4.Layout.Row = 13;
     lbl4.Layout.Column = 1;
     handles.saturationSlider = uislider(controlGrid, ...
         'Limits', [0, 1], 'Value', 0.1);
-    handles.saturationSlider.Layout.Row = 11;
+    handles.saturationSlider.Layout.Row = 13;
     handles.saturationSlider.Layout.Column = [2, 3];
     handles.saturationEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 0.1, 'Limits', [0, 1], ...
         'ValueDisplayFormat', '%.2f');
-    handles.saturationEdit.Layout.Row = 11;
+    handles.saturationEdit.Layout.Row = 13;
     handles.saturationEdit.Layout.Column = 4;
 
     % --- Value Threshold ---
     lbl5 = uilabel(controlGrid, 'Text', 'Val Thresh');
-    lbl5.Layout.Row = 12;
+    lbl5.Layout.Row = 14;
     lbl5.Layout.Column = 1;
     handles.valueSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
-    handles.valueSlider.Layout.Row = 12;
+    handles.valueSlider.Layout.Row = 14;
     handles.valueSlider.Layout.Column = [2, 3];
     handles.valueEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'ValueDisplayFormat', '%.2f');
-    handles.valueEdit.Layout.Row = 12;
+    handles.valueEdit.Layout.Row = 14;
     handles.valueEdit.Layout.Column = 4;
 
     % --- Callbacks ---
@@ -250,7 +262,7 @@ function runHueExpansionApp()
                     binCenters <= handles.outputMaxLine.XData(1);
                 binCenters = binCenters(g);
                 counts = counts(g);
-                barObj = bar(handles.outputHueHistogramAxes, binCenters, counts, 'BarWidth', 1);
+                barObj = bar(handles.outputHueHistogramAxes, binCenters, counts, 'BarWidth', 1, 'FaceColor', 'k');
                 uistack(barObj, 'bottom');
 
                 set(handles.outputHueHistogramAxes, 'XLim', [0 360]);
@@ -340,7 +352,7 @@ function runHueExpansionApp()
 
         [counts, edges] = calculateHueHistogram(originalImage);
         binCenters = edges(1:end-1) + 0.5;
-        barObj = bar(handles.inputHueHistogramAxes, binCenters, counts, 'BarWidth', 1);
+        barObj = bar(handles.inputHueHistogramAxes, binCenters, counts, 'BarWidth', 1, 'FaceColor', 'k');
         uistack(barObj, 'bottom');
 
         set(handles.inputHueHistogramAxes, 'XLim', [0 360]);
@@ -355,8 +367,14 @@ function runHueExpansionApp()
 
     function initializeHueControls()
         spectrumImage = createHueSpectrumImage();
-        imshow(spectrumImage, 'Parent', handles.referenceHueSpectrumAxes);
-        set(handles.referenceHueSpectrumAxes, ...
+        imshow(spectrumImage, 'Parent', handles.inputReferenceHueSpectrumAxes);
+        set(handles.inputReferenceHueSpectrumAxes, ...
+            'XTick', [], 'YTick', [], ...
+            'Box', 'on', ...
+            'XLim', [0 360], 'YLim', [0 20]);
+
+        imshow(spectrumImage, 'Parent', handles.outputReferenceHueSpectrumAxes);
+        set(handles.outputReferenceHueSpectrumAxes, ...
             'XTick', [], 'YTick', [], ...
             'Box', 'on', ...
             'XLim', [0 360], 'YLim', [0 20]);
@@ -376,20 +394,33 @@ function runHueExpansionApp()
         handles.outputMinLine = plot(handles.outputHueHistogramAxes, [0 0], [0 1], 'k', 'LineWidth', 1.5);
         handles.outputMaxLine = plot(handles.outputHueHistogramAxes, [360 360], [0 1], 'k', 'LineWidth', 1.5);
 
+        % Add lines to the reference spectrum axes as well
+        hold(handles.inputReferenceHueSpectrumAxes, 'on');
+        handles.inputMinLineRef = plot(handles.inputReferenceHueSpectrumAxes, [350 350], [0 20], 'k', 'LineWidth', 1.5);
+        handles.inputMaxLineRef = plot(handles.inputReferenceHueSpectrumAxes, [10 10], [0 20], 'k', 'LineWidth', 1.5);
+        hold(handles.inputReferenceHueSpectrumAxes, 'off');
+
+        hold(handles.outputReferenceHueSpectrumAxes, 'on');
+        handles.outputMinLineRef = plot(handles.outputReferenceHueSpectrumAxes, [0 0], [0 20], 'k', 'LineWidth', 1.5);
+        handles.outputMaxLineRef = plot(handles.outputReferenceHueSpectrumAxes, [360 360], [0 20], 'k', 'LineWidth', 1.5);
+        hold(handles.outputReferenceHueSpectrumAxes, 'off');
+
         % Hold off after plotting
         hold(handles.inputHueHistogramAxes, 'off');
         hold(handles.outputHueHistogramAxes, 'off');
 
         % Add callbacks
-        handles.inputMinEdit.ValueChangedFcn = @(src, event) updateLineAndProcess(src, handles.inputMinLine);
-        handles.inputMaxEdit.ValueChangedFcn = @(src, event) updateLineAndProcess(src, handles.inputMaxLine);
-        handles.outputMinEdit.ValueChangedFcn = @(src, event) updateLineAndProcess(src, handles.outputMinLine);
-        handles.outputMaxEdit.ValueChangedFcn = @(src, event) updateLineAndProcess(src, handles.outputMaxLine);
+        handles.inputMinEdit.ValueChangedFcn = @(src, event) updateLineAndProcess(src, [handles.inputMinLine, handles.inputMinLineRef]);
+        handles.inputMaxEdit.ValueChangedFcn = @(src, event) updateLineAndProcess(src, [handles.inputMaxLine, handles.inputMaxLineRef]);
+        handles.outputMinEdit.ValueChangedFcn = @(src, event) updateLineAndProcess(src, [handles.outputMinLine, handles.outputMinLineRef]);
+        handles.outputMaxEdit.ValueChangedFcn = @(src, event) updateLineAndProcess(src, [handles.outputMaxLine, handles.outputMaxLineRef]);
     end
 
-    function updateLineAndProcess(editField, lineHandle)
+    function updateLineAndProcess(editField, lineHandles)
         newValue = editField.Value;
-        set(lineHandle, 'XData', [newValue newValue]);
+        for i = 1:numel(lineHandles)
+            set(lineHandles(i), 'XData', [newValue newValue]);
+        end
         updateView();
     end
 

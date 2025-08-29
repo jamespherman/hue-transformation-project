@@ -182,6 +182,7 @@ function runHueExpansionApp()
             % Update view immediately after loading
             updateView();
         catch ME
+            keyboard
             uialert(fig, ['Error loading image: ' ME.message], 'Image Load Error');
         end
     end
@@ -200,30 +201,39 @@ function runHueExpansionApp()
                 imshow(processedImage, 'Parent', handles.processedAxes);
                 handles.processedAxes.Title.String = 'Processed Image';
 
+                % Ensure new plots are added without clearing existing lines
+                set(handles.outputHueHistogramAxes, 'NextPlot', 'add');
+
                 % --- DYNAMICALLY UPDATE OUTPUT HISTOGRAM ---
                 [counts, edges] = calculateHueHistogram(processedImage);
                 binCenters = edges(1:end-1) + 0.5;
-                bar(handles.outputHueHistogramAxes, binCenters, counts, 'BarWidth', 1);
+                barObj = bar(handles.outputHueHistogramAxes, ...
+                    binCenters, counts, 'BarWidth', 1);
 
                 % Adjust axes and update line positions
                 set(handles.outputHueHistogramAxes, 'XLim', [0 360]);
-                newYLim = get(handles.outputHueHistogramAxes, 'YLim');
-                if newYLim(2) < 1
-                    newYLim(2) = 1; % Ensure YLim is not [0 0]
+                newYLim = [0 max(counts)*1.05];
+                if all(newYLim == 0)
+                    newYLim = [0 1];
                 end
                 set(handles.outputHueHistogramAxes, 'YLim', newYLim);
 
                 % Update the Y-limits of the draggable lines
                 posMin = getPosition(handles.outputMinLine);
                 posMax = getPosition(handles.outputMaxLine);
-                setPosition(handles.outputMinLine, [posMin(1,1) newYLim(1); posMin(1,1) newYLim(2)]);
-                setPosition(handles.outputMaxLine, [posMax(1,1) newYLim(1); posMax(1,1) newYLim(2)]);
+                setPosition(handles.outputMinLine, [posMin(1,1) ...
+                    newYLim(1); posMin(1,1) newYLim(2)]);
+                setPosition(handles.outputMaxLine, [posMax(1,1) ...
+                    newYLim(1); posMax(1,1) newYLim(2)]);
 
                 % Update constraints
                 fcn_out = makeConstrainToRectFcn('imline', [0 360], newYLim);
                 setPositionConstraintFcn(handles.outputMinLine, fcn_out);
                 setPositionConstraintFcn(handles.outputMaxLine, fcn_out);
                 % --- END OF DYNAMIC UPDATE ---
+
+                % Ensure the draggable lines are drawn on top of the histogram
+                uistack(barObj, 'bottom')
 
             else
                 % Clear axes if there's no image to process
@@ -313,13 +323,14 @@ function runHueExpansionApp()
         % Calculate and plot the input histogram
         [counts, edges] = calculateHueHistogram(originalImage);
         binCenters = edges(1:end-1) + 0.5;
-        bar(handles.inputHueHistogramAxes, binCenters, counts, 'BarWidth', 1);
+        barObj = bar(handles.inputHueHistogramAxes, binCenters, counts, ...
+            'BarWidth', 1);
 
         % Adjust axes and update line positions
         set(handles.inputHueHistogramAxes, 'XLim', [0 360]);
-        newYLim = get(handles.inputHueHistogramAxes, 'YLim');
-        if newYLim(2) < 1
-            newYLim(2) = 1; % Ensure YLim is not [0 0] to avoid errors
+        newYLim = [0 max(counts)*1.05];
+        if all(newYLim == 0)
+            newYLim = [0 1];
         end
         set(handles.inputHueHistogramAxes, 'YLim', newYLim);
 
@@ -335,7 +346,7 @@ function runHueExpansionApp()
         setPositionConstraintFcn(handles.inputMaxLine, fcn_in);
 
         % Ensure the draggable lines are drawn on top of the histogram
-        uistack([handles.inputMinLine, handles.inputMaxLine], 'top');
+        uistack(barObj, 'bottom')
     end
 
     function initializeHueControls()

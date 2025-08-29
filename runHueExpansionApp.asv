@@ -316,15 +316,7 @@ function runHueExpansionApp()
         newH = h;
         newH(finalMask) = mappedHues;
 
-        % Desaturate unselected pixels. Start with a copy of the original 
-        % saturation then set the saturation of all non-target pixels to 
-        % 0 (grayscale)
-        newS = s;
-        newS(~finalMask) = 0;
-
-        % Recombine channels and convert back to RGB
-        % Using the new saturation channel 'newS' instead of 's'
-        finalHsvImage = cat(3, newH, newS, v);
+        finalHsvImage = cat(3, newH, s, v);
         outputImage = hsv2rgb(finalHsvImage);
     end
 

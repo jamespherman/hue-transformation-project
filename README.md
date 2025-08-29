@@ -21,7 +21,3 @@ This application is built using MATLAB, with a programmatically generated user i
 ## How to Run
 
 To run the application, open MATLAB, navigate to the project directory, and run the `runHueExpansionApp.m` script from the command window or editor.
-
-```matlab
-runHueExpansionApp
-```

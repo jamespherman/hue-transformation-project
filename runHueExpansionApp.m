@@ -86,7 +86,7 @@ function runHueExpansionApp()
     handles.saturationSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
     handles.saturationSlider.Layout.Row = 5;
     handles.saturationSlider.Layout.Column = 2;
-    handles.saturationEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'Format', '%.2f');
+    handles.saturationEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'ValueDisplayFormat', '%.2f');
     handles.saturationEdit.Layout.Row = 5;
     handles.saturationEdit.Layout.Column = 3;
 
@@ -96,7 +96,7 @@ function runHueExpansionApp()
     handles.valueSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
     handles.valueSlider.Layout.Row = 6;
     handles.valueSlider.Layout.Column = 2;
-    handles.valueEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'Format', '%.2f');
+    handles.valueEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'ValueDisplayFormat', '%.2f');
     handles.valueEdit.Layout.Row = 6;
     handles.valueEdit.Layout.Column = 3;
 

@@ -46,8 +46,8 @@ function runHueExpansionApp()
     controlPanel.Layout.Column = 1;
 
     % Create a grid layout for the controls
-    controlGrid = uigridlayout(controlPanel, [7, 3]);
-    controlGrid.RowHeight = [40, 40, 22, 22, 22, 22, 40]; % Added row for save button
+    controlGrid = uigridlayout(controlPanel, [8, 3]);
+    controlGrid.RowHeight = [40, 40, 22, 60, 22, 60, 22, 22];
     controlGrid.ColumnWidth = {'fit', '1x', 50};
 
     % Load Image Button
@@ -60,71 +60,57 @@ function runHueExpansionApp()
     handles.saveImageButton.Layout.Row = 2;
     handles.saveImageButton.Layout.Column = [1, 3];
 
-    % --- Hue Center ---
-    lbl1 = uilabel(controlGrid, 'Text', 'Hue Center');
-    lbl1.Layout.Row = 3;
-    handles.hueCenterSlider = uislider(controlGrid, 'Limits', [0, 360], 'Value', 180);
-    handles.hueCenterSlider.Layout.Row = 3;
-    handles.hueCenterSlider.Layout.Column = 2;
-    handles.hueCenterEdit = uieditfield(controlGrid, 'numeric', 'Value', 180, 'Limits', [0, 360]);
-    handles.hueCenterEdit.Layout.Row = 3;
-    handles.hueCenterEdit.Layout.Column = 3;
+    % --- Input Hue Range ---
+    uilabel(controlGrid, 'Text', 'Input Hue Range').Layout = struct('Row', 3, 'Column', [1, 3]);
+    handles.inputHueAxes = uiaxes(controlGrid);
+    handles.inputHueAxes.Layout.Row = 4;
+    handles.inputHueAxes.Layout.Column = [1, 3];
+    handles.inputHueAxes.XTick = [];
+    handles.inputHueAxes.YTick = [];
+    disableDefaultInteractivity(handles.inputHueAxes);
 
-    % --- Hue Width ---
-    lbl2 = uilabel(controlGrid, 'Text', 'Hue Width');
-    lbl2.Layout.Row = 4;
-    handles.hueWidthSlider = uislider(controlGrid, 'Limits', [0, 360], 'Value', 90);
-    handles.hueWidthSlider.Layout.Row = 4;
-    handles.hueWidthSlider.Layout.Column = 2;
-    handles.hueWidthEdit = uieditfield(controlGrid, 'numeric', 'Value', 90, 'Limits', [0, 360]);
-    handles.hueWidthEdit.Layout.Row = 4;
-    handles.hueWidthEdit.Layout.Column = 3;
+    % --- Output Hue Range ---
+    uilabel(controlGrid, 'Text', 'Output Hue Range').Layout = struct('Row', 5, 'Column', [1, 3]);
+    handles.outputHueAxes = uiaxes(controlGrid);
+    handles.outputHueAxes.Layout.Row = 6;
+    handles.outputHueAxes.Layout.Column = [1, 3];
+    handles.outputHueAxes.XTick = [];
+    handles.outputHueAxes.YTick = [];
+    disableDefaultInteractivity(handles.outputHueAxes);
 
     % --- Saturation Threshold ---
     lbl3 = uilabel(controlGrid, 'Text', 'Sat Thresh');
-    lbl3.Layout.Row = 5;
+    lbl3.Layout.Row = 7;
     handles.saturationSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
-    handles.saturationSlider.Layout.Row = 5;
+    handles.saturationSlider.Layout.Row = 7;
     handles.saturationSlider.Layout.Column = 2;
     handles.saturationEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'ValueDisplayFormat', '%.2f');
-    handles.saturationEdit.Layout.Row = 5;
+    handles.saturationEdit.Layout.Row = 7;
     handles.saturationEdit.Layout.Column = 3;
 
     % --- Value Threshold ---
     lbl4 = uilabel(controlGrid, 'Text', 'Val Thresh');
-    lbl4.Layout.Row = 6;
+    lbl4.Layout.Row = 8;
     handles.valueSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
-    handles.valueSlider.Layout.Row = 6;
+    handles.valueSlider.Layout.Row = 8;
     handles.valueSlider.Layout.Column = 2;
     handles.valueEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'ValueDisplayFormat', '%.2f');
-    handles.valueEdit.Layout.Row = 6;
+    handles.valueEdit.Layout.Row = 8;
     handles.valueEdit.Layout.Column = 3;
-
-    % --- Shift Spectrum Checkbox ---
-    handles.shiftSpectrumCheckbox = uicheckbox(controlGrid, 'Text', 'Shift Output Spectrum');
-    handles.shiftSpectrumCheckbox.Layout.Row = 7;
-    handles.shiftSpectrumCheckbox.Layout.Column = [1, 3];
 
     % --- Callbacks ---
     handles.loadImageButton.ButtonPushedFcn = @loadImageCallback;
     handles.saveImageButton.ButtonPushedFcn = @saveImageCallback;
 
     % Synchronization and update callbacks
-    handles.hueCenterSlider.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.hueCenterEdit);
-    handles.hueCenterEdit.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.hueCenterSlider);
-
-    handles.hueWidthSlider.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.hueWidthEdit);
-    handles.hueWidthEdit.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.hueWidthSlider);
-
     handles.saturationSlider.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.saturationEdit);
     handles.saturationEdit.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.saturationSlider);
 
     handles.valueSlider.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.valueEdit);
     handles.valueEdit.ValueChangedFcn = @(src, ~) syncAndUpdate(src, handles.valueSlider);
 
-    handles.shiftSpectrumCheckbox.ValueChangedFcn = @updateView;
-
     % --- App Startup ---
+    initializeHueAxes();
     loadDefaultImage();
 
     % --- Nested Callback Functions ---
@@ -214,12 +200,19 @@ function runHueExpansionApp()
             return;
         end
 
-        % Get parameter values from UI
-        hueCenter = handles.hueCenterSlider.Value / 360; % Normalize to [0,1]
-        hueWidth = handles.hueWidthSlider.Value / 360;   % Normalize to [0,1]
+        % Get marker positions and normalize from [0, 360] to [0, 1]
+        inputMinPos = getPosition(handles.inputMinLine);
+        inputMin = inputMinPos(1,1) / 360;
+        inputMaxPos = getPosition(handles.inputMaxLine);
+        inputMax = inputMaxPos(1,1) / 360;
+
+        outputMinPos = getPosition(handles.outputMinLine);
+        outputMin = outputMinPos(1,1) / 360;
+        outputMaxPos = getPosition(handles.outputMaxLine);
+        outputMax = outputMaxPos(1,1) / 360;
+
         satThreshold = handles.saturationSlider.Value;
         valThreshold = handles.valueSlider.Value;
-        shiftOutput = handles.shiftSpectrumCheckbox.Value;
 
         % Convert to HSV
         hsvImage = rgb2hsv(originalImage);
@@ -227,44 +220,96 @@ function runHueExpansionApp()
         s = hsvImage(:,:,2);
         v = hsvImage(:,:,3);
 
-        % Create a mask for pixels to process
-        mask = (s >= satThreshold) & (v >= valThreshold);
+        % Create a mask for pixels to process based on saturation and value
+        satValMask = (s >= satThreshold) & (v >= valThreshold);
 
-        % Calculate angular distance from the center hue
-        dist = abs(h - hueCenter);
-        dist = min(dist, 1 - dist); % Handle wrap-around distance
-
-        % Create a mask for hues within the specified width
-        hueMask = (dist <= hueWidth / 2);
-
-        % Combine masks
-        finalMask = mask & hueMask;
-
-        % Get hue values to be expanded
-        targetHues = h(finalMask);
-
-        % Perform hue expansion
-        % Calculate distance from lower bound of the hue window
-        lowerBound = hueCenter - hueWidth / 2;
-        hueDistFromLower = targetHues - lowerBound;
-
-        % Handle negative results from wrap-around
-        hueDistFromLower(hueDistFromLower < 0) = hueDistFromLower(hueDistFromLower < 0) + 1;
-
-        % Scale the hue to the full [0, 1] range
-        expandedHues = hueDistFromLower / hueWidth;
-
-        % Apply shift if checked
-        if shiftOutput
-            expandedHues = mod(expandedHues + 0.5, 1);
+        % Create a mask for hues within the input range
+        if inputMin <= inputMax
+            hueMask = (h >= inputMin) & (h <= inputMax);
+        else % Handle wrap-around case
+            hueMask = (h >= inputMin) | (h <= inputMax);
         end
 
-        % Create a new hue channel
+        % Combine masks
+        finalMask = satValMask & hueMask;
+
+        % Get original hues of the pixels to be changed
+        targetHues = h(finalMask);
+
+        % Calculate normalized distance from the input minimum
+        inputWidth = mod(inputMax - inputMin, 1);
+        if inputWidth < 1e-6; inputWidth = 1; end % Avoid division by zero if range is full circle or tiny
+
+        distFromMin = mod(targetHues - inputMin, 1);
+
+        % Scale to a [0, 1] range representing position within the input window
+        relativeHuePos = distFromMin / inputWidth;
+
+        % Map to the output range
+        outputWidth = mod(outputMax - outputMin, 1);
+        if outputWidth < 1e-6; outputWidth = 1; end
+
+        mappedHues = mod(outputMin + relativeHuePos * outputWidth, 1);
+
+        % Create a new hue channel and update the selected pixels
         newH = h;
-        newH(finalMask) = expandedHues;
+        newH(finalMask) = mappedHues;
 
         % Recombine channels and convert back to RGB
         finalHsvImage = cat(3, newH, s, v);
         outputImage = hsv2rgb(finalHsvImage);
+    end
+
+    function initializeHueAxes()
+        % Create and display the hue spectrum image on both axes
+        spectrumImage = createHueSpectrumImage();
+        imshow(spectrumImage, 'Parent', handles.inputHueAxes);
+        imshow(spectrumImage, 'Parent', handles.outputHueAxes);
+
+        % Set axis properties
+        set([handles.inputHueAxes, handles.outputHueAxes], ...
+            'XTick', [], 'YTick', [], 'Box', 'on', 'XLim', [0 360], 'YLim', [0 1]);
+
+        % Create draggable lines (imline) for input and output ranges
+        % Input range defaults to a narrow red band (e.g., 350 to 10 degrees)
+        handles.inputMinLine = imline(handles.inputHueAxes, [350 350], [0 1]);
+        handles.inputMaxLine = imline(handles.inputHueAxes, [10 10], [0 1]);
+
+        % Output range defaults to the full spectrum
+        handles.outputMinLine = imline(handles.outputHueAxes, [0 0], [0 1]);
+        handles.outputMaxLine = imline(handles.outputHueAxes, [360 360], [0 1]);
+
+        % Customize line appearance
+        allLines = [handles.inputMinLine, handles.inputMaxLine, handles.outputMinLine, handles.outputMaxLine];
+        setColor(allLines, [0.9 0.9 0.9]); % Light gray for better visibility
+
+        % Set constraints for dragging
+        fcn = makeConstrainToRectFcn('imline', get(handles.inputHueAxes,'XLim'), [0 1]);
+        setPositionConstraintFcn(handles.inputMinLine, fcn);
+        setPositionConstraintFcn(handles.inputMaxLine, fcn);
+
+        fcn_out = makeConstrainToRectFcn('imline', get(handles.outputHueAxes,'XLim'), [0 1]);
+        setPositionConstraintFcn(handles.outputMinLine, fcn_out);
+        setPositionConstraintFcn(handles.outputMaxLine, fcn_out);
+
+        % Add callbacks to update the view when lines are moved
+        addNewPositionCallback(handles.inputMinLine, @(pos) updateView());
+        addNewPositionCallback(handles.inputMaxLine, @(pos) updateView());
+        addNewPositionCallback(handles.outputMinLine, @(pos) updateView());
+        addNewPositionCallback(handles.outputMaxLine, @(pos) updateView());
+    end
+
+    function spectrumImg = createHueSpectrumImage()
+        % Creates a 1x360x3 HSV image representing the hue spectrum
+        % and converts it to an RGB image.
+        hue = linspace(0, 1, 360); % Hue from 0 to 1
+        saturation = ones(1, 360); % Full saturation
+        value = ones(1, 360);      % Full value/brightness
+
+        hsvImage = cat(3, reshape(hue, [1, 360, 1]), ...
+                          reshape(saturation, [1, 360, 1]), ...
+                          reshape(value, [1, 360, 1]));
+
+        spectrumImg = hsv2rgb(hsvImage);
     end
 end

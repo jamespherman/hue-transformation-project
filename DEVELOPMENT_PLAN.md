@@ -19,3 +19,12 @@ This document tracks the development of the Hue-Expansion Tool. The original pla
 - [x] Task 3.3: Add a 'Save Processed Image' button (`uibutton`) and write its associated callback function.
 - [x] Task 3.4: Implement `try/catch` blocks within the callbacks for robust error handling.
 - [x] Task 3.5: Update `README.md` and `DEVELOPMENT_PLAN.md` to reflect the new architecture.
+
+### Phase 4: Visual Hue Remapping
+- [x] Task 4.1: Replace "Hue Center" and "Hue Width" sliders with two `uiaxes` for visual range selection.
+- [x] Task 4.2: Generate and display the hue spectrum on the new axes.
+- [x] Task 4.3: Implement draggable markers (`imline`) for defining input and output hue ranges.
+- [x] Task 4.4: Rewrite `processImage` to use marker positions for hue selection and remapping, including handling of circular hue space.
+- [x] Task 4.5: Connect marker callbacks to `updateView` for real-time updates.
+- [x] Task 4.6: Remove the "Shift Output Spectrum" checkbox and associated logic.
+- [x] Task 4.7: Update documentation (`README.md`, `DEVELOPMENT_PLAN.md`) to reflect the new feature.

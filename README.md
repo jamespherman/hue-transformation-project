@@ -8,9 +8,8 @@ This tool is a MATLAB application for visualizing hue expansion transformations 
 
 * Load standard image formats (JPG, PNG, etc.).
 * Real-time preview of a processed image alongside the original.
-* Interactive sliders and controls for adjusting hue expansion parameters (center, width, saturation/value thresholds).
-* Numeric input fields for precise parameter control.
-* Option to shift the output spectrum for different perceptual mappings.
+* Interactive visual controls for hue remapping. Users can drag markers on two hue spectrum graphs to define an input hue range and a corresponding output range.
+* Sliders for adjusting saturation and value thresholds.
 * Ability to save the processed image.
 * Automatically loads `your_endoscopic_image.jpg` if present in the directory on startup.
 

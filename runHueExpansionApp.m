@@ -61,7 +61,9 @@ function runHueExpansionApp()
     handles.saveImageButton.Layout.Column = [1, 3];
 
     % --- Input Hue Range ---
-    uilabel(controlGrid, 'Text', 'Input Hue Range').Layout = struct('Row', 3, 'Column', [1, 3]);
+    lbl1 = uilabel(controlGrid, 'Text', 'Input Hue Range');
+    lbl1.Layout.Row = 3;          % Set the row
+    lbl1.Layout.Column = [1, 3];  % Set the columns
     handles.inputHueAxes = uiaxes(controlGrid);
     handles.inputHueAxes.Layout.Row = 4;
     handles.inputHueAxes.Layout.Column = [1, 3];
@@ -70,7 +72,9 @@ function runHueExpansionApp()
     disableDefaultInteractivity(handles.inputHueAxes);
 
     % --- Output Hue Range ---
-    uilabel(controlGrid, 'Text', 'Output Hue Range').Layout = struct('Row', 5, 'Column', [1, 3]);
+    lbl2 = uilabel(controlGrid, 'Text', 'Output Hue Range');
+    lbl2.Layout.Row = 5;
+    lbl2.Layout.Column = [1, 3];
     handles.outputHueAxes = uiaxes(controlGrid);
     handles.outputHueAxes.Layout.Row = 6;
     handles.outputHueAxes.Layout.Column = [1, 3];

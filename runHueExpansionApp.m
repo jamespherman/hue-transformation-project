@@ -354,7 +354,11 @@ function runHueExpansionApp()
 
         % Customize line appearance
         allLines = [handles.inputMinLine, handles.inputMaxLine, handles.outputMinLine, handles.outputMaxLine];
-        setColor(allLines, [0.1 0.1 0.1]);
+
+        % Loop through each line and set its color individually
+        for i = 1:numel(allLines)
+            setColor(allLines(i), [0.1 0.1 0.1]);
+        end
 
         % Set constraints for dragging
         fcn_in = makeConstrainToRectFcn('imline', get(handles.inputHueHistogramAxes,'XLim'), [0 1]);

@@ -66,9 +66,6 @@ function runHueExpansionApp()
     handles.saveImageButton.Layout.Column = [1, 4];
 
     % --- Input Reference Hue Spectrum ---
-    lbl3 = uilabel(controlGrid, 'Text', 'Input Reference Hue Spectrum');
-    lbl3.Layout.Row = 3;
-    lbl3.Layout.Column = [1, 4];
     handles.inputReferenceHueSpectrumAxes = uiaxes(controlGrid);
     handles.inputReferenceHueSpectrumAxes.Layout.Row = 4;
     handles.inputReferenceHueSpectrumAxes.Layout.Column = [1, 4];
@@ -78,35 +75,32 @@ function runHueExpansionApp()
 
     % --- Input Hue Histogram ---
     lbl1 = uilabel(controlGrid, 'Text', 'Input Hue Histogram');
-    lbl1.Layout.Row = 5;
+    lbl1.Layout.Row = 3;
     lbl1.Layout.Column = [1, 4];
     handles.inputHueHistogramAxes = uiaxes(controlGrid);
-    handles.inputHueHistogramAxes.Layout.Row = 6;
+    handles.inputHueHistogramAxes.Layout.Row = 5;
     handles.inputHueHistogramAxes.Layout.Column = [1, 4];
     handles.inputHueHistogramAxes.YTick = [];
     disableDefaultInteractivity(handles.inputHueHistogramAxes);
 
     lbl11 = uilabel(controlGrid, 'Text', 'Min:');
-    lbl11.Layout.Row = 7;
+    lbl11.Layout.Row = 6;
     lbl11.Layout.Column = 1;
     lbl12 = uilabel(controlGrid, 'Text', 'Max:');
-    lbl12.Layout.Row = 7;
+    lbl12.Layout.Row = 6;
     lbl12.Layout.Column = 3;
     handles.inputMinEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 350, 'Limits', [0, 360]);
     handles.inputMaxEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 10, 'Limits', [0, 360]);
-    handles.inputMinEdit.Layout.Row = 7;
+    handles.inputMinEdit.Layout.Row = 6;
     handles.inputMinEdit.Layout.Column = 2;
-    handles.inputMaxEdit.Layout.Row = 7;
+    handles.inputMaxEdit.Layout.Row = 6;
     handles.inputMaxEdit.Layout.Column = 4;
 
     % --- Output Reference Hue Spectrum ---
-    lbl_output_ref = uilabel(controlGrid, 'Text', 'Output Reference Hue Spectrum');
-    lbl_output_ref.Layout.Row = 8;
-    lbl_output_ref.Layout.Column = [1, 4];
     handles.outputReferenceHueSpectrumAxes = uiaxes(controlGrid);
-    handles.outputReferenceHueSpectrumAxes.Layout.Row = 9;
+    handles.outputReferenceHueSpectrumAxes.Layout.Row = 7;
     handles.outputReferenceHueSpectrumAxes.Layout.Column = [1, 4];
     handles.outputReferenceHueSpectrumAxes.XTick = [];
     handles.outputReferenceHueSpectrumAxes.YTick = [];
@@ -114,52 +108,52 @@ function runHueExpansionApp()
 
     % --- Output Hue Histogram ---
     lbl2 = uilabel(controlGrid, 'Text', 'Output Hue Histogram');
-    lbl2.Layout.Row = 10;
+    lbl2.Layout.Row = 8;
     lbl2.Layout.Column = [1, 4];
     handles.outputHueHistogramAxes = uiaxes(controlGrid);
-    handles.outputHueHistogramAxes.Layout.Row = 11;
+    handles.outputHueHistogramAxes.Layout.Row = 9;
     handles.outputHueHistogramAxes.Layout.Column = [1, 4];
     handles.outputHueHistogramAxes.YTick = [];
     disableDefaultInteractivity(handles.outputHueHistogramAxes);
 
     lbl21 = uilabel(controlGrid, 'Text', 'Min:');
-    lbl21.Layout.Row = 12;
+    lbl21.Layout.Row = 10;
     lbl21.Layout.Column = 1;
     lbl22 = uilabel(controlGrid, 'Text', 'Max:');
-    lbl22.Layout.Row = 12;
+    lbl22.Layout.Row = 10;
     lbl22.Layout.Column = 3;
     handles.outputMinEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 0, 'Limits', [0, 360]);
     handles.outputMaxEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 360, 'Limits', [0, 360]);
-    handles.outputMinEdit.Layout.Row = 12;
+    handles.outputMinEdit.Layout.Row = 10;
     handles.outputMinEdit.Layout.Column = 2;
-    handles.outputMaxEdit.Layout.Row = 12;
+    handles.outputMaxEdit.Layout.Row = 10;
     handles.outputMaxEdit.Layout.Column = 4;
 
     % --- Saturation Threshold ---
     lbl4 = uilabel(controlGrid, 'Text', 'Sat Thresh');
-    lbl4.Layout.Row = 13;
+    lbl4.Layout.Row = 11;
     lbl4.Layout.Column = 1;
     handles.saturationSlider = uislider(controlGrid, ...
         'Limits', [0, 1], 'Value', 0.1);
-    handles.saturationSlider.Layout.Row = 13;
+    handles.saturationSlider.Layout.Row = 11;
     handles.saturationSlider.Layout.Column = [2, 3];
     handles.saturationEdit = uieditfield(controlGrid, ...
         'numeric', 'Value', 0.1, 'Limits', [0, 1], ...
         'ValueDisplayFormat', '%.2f');
-    handles.saturationEdit.Layout.Row = 13;
+    handles.saturationEdit.Layout.Row = 11;
     handles.saturationEdit.Layout.Column = 4;
 
     % --- Value Threshold ---
     lbl5 = uilabel(controlGrid, 'Text', 'Val Thresh');
-    lbl5.Layout.Row = 14;
+    lbl5.Layout.Row = 12;
     lbl5.Layout.Column = 1;
     handles.valueSlider = uislider(controlGrid, 'Limits', [0, 1], 'Value', 0.1);
-    handles.valueSlider.Layout.Row = 14;
+    handles.valueSlider.Layout.Row = 12;
     handles.valueSlider.Layout.Column = [2, 3];
     handles.valueEdit = uieditfield(controlGrid, 'numeric', 'Value', 0.1, 'Limits', [0, 1], 'ValueDisplayFormat', '%.2f');
-    handles.valueEdit.Layout.Row = 14;
+    handles.valueEdit.Layout.Row = 12;
     handles.valueEdit.Layout.Column = 4;
 
     % --- Callbacks ---

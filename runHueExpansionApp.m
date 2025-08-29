@@ -47,7 +47,7 @@ function runHueExpansionApp()
 
     % Create a grid layout for the controls
     controlGrid = uigridlayout(controlPanel, [10, 3]);
-    controlGrid.RowHeight = [40, 40, 22, '1x', 22, '1x', 22, 40, 22, 22]; % Adjusted for 3 axes
+    controlGrid.RowHeight = {40, 40, 22, '1x', 22, '1x', 22, 40, 22, 22}; % Adjusted for 3 axes
     controlGrid.ColumnWidth = {'fit', '1x', 50};
 
     % Load Image Button

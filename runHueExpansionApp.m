@@ -47,12 +47,7 @@ function runHueExpansionApp()
 
     % Create a grid layout for the controls
     controlGrid = uigridlayout(controlPanel, [16, 4]); % More rows and a new column
-    controlGrid.RowHeight = {40, 40, ... % Buttons
-                             22, 40, ...    % Input Ref Spectrum
-                             22, '1x', 30, ... % Input Hist + Controls
-                             22, 40, ...    % Output Ref Spectrum
-                             22, '1x', 30, ... % Output Hist + Controls
-                             22, 22, 22, 22}; % Sliders
+    controlGrid.RowHeight = {40, 40, 22, 40, '1x', 30, 30, 22, '1x', 30, 22, 22, 22, 22, 22, 22};
     controlGrid.ColumnWidth = {'fit', '1x', 'fit', '1x'};
 
     % Load Image Button
